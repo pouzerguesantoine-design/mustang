@@ -1,0 +1,17 @@
+# Système
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Éditeurs (on garde les recommandations d'extensions)
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Archives et brouillons
+*.zip
+*.log

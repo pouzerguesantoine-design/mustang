@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ford Mustang Shelby GT500 — L'icône américaine</title>
+  <meta name="description" content="Découvrez la Ford Mustang Shelby GT500 dans une expérience 3D immersive : V8 5.2 suralimenté, 760 ch, design iconique. Explorez, configurez, ressentez." />
+  <meta property="og:title" content="Ford Mustang Shelby GT500 — Expérience immersive" />
+  <meta property="og:description" content="Une expérience cinématographique autour de la Ford Mustang Shelby GT500." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pouzerguesantoine-design.github.io/mustang/" />
+  <meta property="og:image" content="https://pouzerguesantoine-design.github.io/mustang/docs/screenshots/01-hero.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://pouzerguesantoine-design.github.io/mustang/" />
+  <meta name="theme-color" content="#050505" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23050505'/%3E%3Cpath d='M7 21 12 11l4 6 4-6 5 10' stroke='%23e01e2b' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Typographies premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/main.css" />
+
+  <!-- Librairies animation (globales) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <!-- Three.js via import map -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <a class="skip-link" href="#hero">Aller au contenu</a>
+
+  <!-- ══════════════ ÉCRAN DE CHARGEMENT ══════════════ -->
+  <div class="loader" id="loader" aria-hidden="false">
+    <div class="loader__inner">
+      <svg class="loader__emblem" viewBox="0 0 120 60" fill="none" aria-hidden="true">
+        <path class="loader__emblem-path" d="M8 46 26 14l14 22 14-24 14 24 14-22 18 32"
+              stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="loader__wordmark" aria-label="Mustang">
+        <span>M</span><span>U</span><span>S</span><span>T</span><span>A</span><span>N</span><span>G</span>
+      </div>
+      <div class="loader__bar"><div class="loader__bar-fill" id="loader-bar"></div></div>
+      <div class="loader__percent" id="loader-percent">0</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CURSEUR PERSONNALISÉ ══════════════ -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"></div>
+  </div>
+
+  <!-- ══════════════ CANVAS WEBGL ══════════════ -->
+  <canvas class="webgl" id="webgl" aria-hidden="true"></canvas>
+
+  <!-- Overlay vitesse (motion blur simulé) -->
+  <div class="speed-overlay" id="speed-overlay" aria-hidden="true"></div>
+  <!-- Fondu au noir final -->
+  <div class="blackout" id="blackout" aria-hidden="true"></div>
+
+  <!-- ══════════════ NAVIGATION ══════════════ -->
+  <header class="nav" id="nav">
+    <a class="nav__logo magnetic" href="#hero" aria-label="Mustang GT — retour à l'accueil">
+      <svg viewBox="0 0 120 60" fill="none" aria-hidden="true">
+        <path d="M8 46 26 14l14 22 14-24 14 24 14-22 18 32" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>SHELBY&nbsp;GT500</span>
+    </a>
+    <nav class="nav__links" aria-label="Navigation principale">
+      <a href="#design" class="nav__link magnetic">Design</a>
+      <a href="#moteur" class="nav__link magnetic">Moteur</a>
+      <a href="#interieur" class="nav__link magnetic">Intérieur</a>
+      <a href="#performance" class="nav__link magnetic">Performance</a>
+      <a href="#galerie" class="nav__link magnetic">Galerie</a>
+      <a href="#configurateur" class="nav__link nav__link--accent magnetic">Configurer</a>
+    </nav>
+    <button class="nav__sound magnetic" id="sound-toggle" aria-pressed="false" aria-label="Activer le son du moteur">
+      <span class="nav__sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="nav__sound-label">Son</span>
+    </button>
+    <div class="nav__progress" aria-hidden="true"><div class="nav__progress-fill" id="scroll-progress"></div></div>
+  </header>
+
+  <main id="main">
+
+    <!-- ══════════════ SCÈNE 1 — HERO ══════════════ -->
+    <section class="section hero" id="hero" data-scene="hero" aria-labelledby="hero-title">
+      <div class="hero__content">
+        <p class="hero__eyebrow reveal-line"><span>Ford Performance — Depuis 1964</span></p>
+        <h1 class="hero__title" id="hero-title">
+          <span class="hero__title-line"><span>MUST</span></span><span class="hero__title-line"><span>ANG</span></span>
+        </h1>
+        <p class="hero__tagline reveal-line"><span>Shelby GT500. L'icône américaine, réinventée.</span></p>
+        <div class="hero__meta">
+          <div class="hero__meta-item"><strong>760</strong><span>chevaux</span></div>
+          <div class="hero__meta-sep"></div>
+          <div class="hero__meta-item"><strong>V8</strong><span>5.2 Predator</span></div>
+          <div class="hero__meta-sep"></div>
+          <div class="hero__meta-item"><strong>3,7<small>s</small></strong><span>0 – 100 km/h</span></div>
+        </div>
+      </div>
+      <div class="hero__scroll" aria-hidden="true">
+        <span>Scroller pour piloter</span>
+        <div class="hero__scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 2 — DESIGN / TOUR ══════════════ -->
+    <section class="section design" id="design" data-scene="design" aria-labelledby="design-title">
+      <div class="section__head">
+        <p class="section__eyebrow">01 — Design</p>
+        <h2 class="section__title" id="design-title">Sculptée par<br /><em>le vent.</em></h2>
+      </div>
+      <div class="design__features">
+        <article class="design-card glass" data-feature="0">
+          <span class="design-card__index">01</span>
+          <h3>Peinture Race Red</h3>
+          <p>Sept couches de laque appliquées à la main. Une profondeur miroir qui capture chaque source de lumière.</p>
+        </article>
+        <article class="design-card glass" data-feature="1">
+          <span class="design-card__index">02</span>
+          <h3>Jantes 20″ forgées</h3>
+          <p>Aluminium forgé, usinées dans la masse. Chaque gramme éliminé se ressent dans la direction.</p>
+        </article>
+        <article class="design-card glass" data-feature="2">
+          <span class="design-card__index">03</span>
+          <h3>Freins Brembo™</h3>
+          <p>Étriers six pistons, disques de 420&nbsp;mm — les plus grands jamais montés sur une américaine de série.</p>
+        </article>
+        <article class="design-card glass" data-feature="3">
+          <span class="design-card__index">04</span>
+          <h3>Signature tri-barre</h3>
+          <p>Les feux arrière séquentiels, emblème de la lignée depuis 1964. Reconnaissable entre mille, de nuit comme de jour.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 3 — MOTEUR ══════════════ -->
+    <section class="section engine" id="moteur" data-scene="engine" aria-labelledby="engine-title">
+      <div class="section__head">
+        <p class="section__eyebrow">02 — Motorisation</p>
+        <h2 class="section__title" id="engine-title">V8 5.2<br /><em>Predator.</em></h2>
+        <p class="section__lead">Huit cylindres, compresseur volumétrique de 2,65&nbsp;litres. Le moteur le plus puissant jamais monté dans une Ford de série.</p>
+      </div>
+      <div class="engine__stats" role="list">
+        <div class="stat glass" role="listitem">
+          <span class="stat__value"><span data-counter="760" data-decimals="0">0</span></span>
+          <span class="stat__unit">ch</span>
+          <span class="stat__label">Puissance</span>
+        </div>
+        <div class="stat glass" role="listitem">
+          <span class="stat__value"><span data-counter="847" data-decimals="0">0</span></span>
+          <span class="stat__unit">Nm</span>
+          <span class="stat__label">Couple</span>
+        </div>
+        <div class="stat glass" role="listitem">
+          <span class="stat__value"><span data-counter="3.7" data-decimals="1">0</span></span>
+          <span class="stat__unit">s</span>
+          <span class="stat__label">0 – 100 km/h</span>
+        </div>
+        <div class="stat glass" role="listitem">
+          <span class="stat__value"><span data-counter="290" data-decimals="0">0</span></span>
+          <span class="stat__unit">km/h</span>
+          <span class="stat__label">Vitesse max</span>
+        </div>
+        <div class="stat glass" role="listitem">
+          <span class="stat__value"><span data-counter="2.65" data-decimals="2">0</span></span>
+          <span class="stat__unit">L</span>
+          <span class="stat__label">Compresseur</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 4 — INTÉRIEUR ══════════════ -->
+    <section class="section interior" id="interieur" data-scene="interior" aria-labelledby="interior-title">
+      <div class="section__head section__head--right">
+        <p class="section__eyebrow">03 — Habitacle</p>
+        <h2 class="section__title" id="interior-title">Cockpit<br /><em>pilote.</em></h2>
+        <p class="section__lead">Cuir surpiqué, aluminium brossé, instrumentation numérique 12,3″. Tout converge vers vous.</p>
+      </div>
+      <div class="interior__panel glass">
+        <h3>Éclairage d'ambiance</h3>
+        <p>Choisissez votre atmosphère. L'habitacle répond instantanément.</p>
+        <div class="interior__ambient" role="group" aria-label="Couleur d'ambiance">
+          <button class="ambient-btn magnetic is-active" data-ambient="#e01e2b" style="--c:#e01e2b" aria-label="Ambiance rouge"></button>
+          <button class="ambient-btn magnetic" data-ambient="#3d7bff" style="--c:#3d7bff" aria-label="Ambiance bleue"></button>
+          <button class="ambient-btn magnetic" data-ambient="#ff9d2b" style="--c:#ff9d2b" aria-label="Ambiance ambre"></button>
+          <button class="ambient-btn magnetic" data-ambient="#f2f0ea" style="--c:#f2f0ea" aria-label="Ambiance blanche"></button>
+        </div>
+        <ul class="interior__list">
+          <li>Sièges Recaro® chauffants &amp; ventilés</li>
+          <li>Système B&amp;O® 12 haut-parleurs — 1000 W</li>
+          <li>Compteurs numériques configurables</li>
+          <li>Modes de conduite : Normal · Sport+ · Piste · Drag</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 5 — PERFORMANCE ══════════════ -->
+    <section class="section performance" id="performance" data-scene="performance" aria-labelledby="perf-title">
+      <div class="section__head">
+        <p class="section__eyebrow">04 — Performance</p>
+        <h2 class="section__title" id="perf-title">Ligne<br /><em>droite.</em></h2>
+      </div>
+      <div class="performance__hud">
+        <div class="speedo glass" aria-hidden="true">
+          <svg viewBox="0 0 200 130" class="speedo__svg">
+            <path class="speedo__track" d="M20 115 A 85 85 0 1 1 180 115" />
+            <path class="speedo__fill" id="speedo-fill" d="M20 115 A 85 85 0 1 1 180 115" />
+            <g id="speedo-needle" class="speedo__needle">
+              <line x1="100" y1="103" x2="100" y2="38" />
+              <circle cx="100" cy="103" r="5" />
+            </g>
+          </svg>
+          <div class="speedo__value"><span id="speedo-value">0</span><small>km/h</small></div>
+        </div>
+        <div class="performance__bars glass">
+          <h3>0 – 100 km/h</h3>
+          <div class="perf-bar"><span class="perf-bar__label">Shelby GT500</span><div class="perf-bar__track"><div class="perf-bar__fill perf-bar__fill--accent" data-width="94"></div></div><span class="perf-bar__time">3,7 s</span></div>
+          <div class="perf-bar"><span class="perf-bar__label">Mustang GT</span><div class="perf-bar__track"><div class="perf-bar__fill" data-width="78"></div></div><span class="perf-bar__time">4,3 s</span></div>
+          <div class="perf-bar"><span class="perf-bar__label">Shelby GT500 1967</span><div class="perf-bar__track"><div class="perf-bar__fill" data-width="48"></div></div><span class="perf-bar__time">6,5 s</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 6 — GALERIE ══════════════ -->
+    <section class="section gallery" id="galerie" data-scene="gallery" aria-labelledby="gallery-title">
+      <div class="section__head section__head--center">
+        <p class="section__eyebrow">05 — Galerie</p>
+        <h2 class="section__title" id="gallery-title">Sous toutes<br /><em>les lumières.</em></h2>
+      </div>
+      <div class="gallery__grid">
+        <figure class="gallery-card tilt" data-depth="0.6"><div class="gallery-card__art"><img src="assets/images/gallery-01.jpg" alt="Shelby GT500 rouge de trois quarts avant, phares allumés dans l'obscurité" loading="lazy" width="1200" height="800" /></div><figcaption>Minuit — Nevada</figcaption></figure>
+        <figure class="gallery-card tilt" data-depth="1.2"><div class="gallery-card__art"><img src="assets/images/gallery-02.jpg" alt="Gros plan sur la jante forgée 20 pouces et l'étrier Brembo rouge" loading="lazy" width="1200" height="800" /></div><figcaption>Forgée 20″</figcaption></figure>
+        <figure class="gallery-card tilt" data-depth="0.8"><div class="gallery-card__art"><img src="assets/images/gallery-03.jpg" alt="Shelby GT500 bleu Grabber vue de profil" loading="lazy" width="1200" height="800" /></div><figcaption>Bleu Grabber</figcaption></figure>
+        <figure class="gallery-card tilt" data-depth="1.4"><div class="gallery-card__art"><img src="assets/images/gallery-04.jpg" alt="Feux arrière tri-barre et aileron de la Shelby GT500" loading="lazy" width="1200" height="800" /></div><figcaption>Tri-barre</figcaption></figure>
+        <figure class="gallery-card tilt" data-depth="0.7"><div class="gallery-card__art"><img src="assets/images/gallery-05.jpg" alt="Vue plongeante sur le capot et son extracteur d'air" loading="lazy" width="1200" height="800" /></div><figcaption>Capot — extracteur</figcaption></figure>
+        <figure class="gallery-card tilt" data-depth="1.1"><div class="gallery-card__art"><img src="assets/images/gallery-06.jpg" alt="Shelby GT500 noire, jantes satinées, vue basse de trois quarts arrière" loading="lazy" width="1200" height="800" /></div><figcaption>Ombre — profil</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 7 — CONFIGURATEUR ══════════════ -->
+    <section class="section configurator" id="configurateur" data-scene="configurator" aria-labelledby="config-title">
+      <div class="section__head">
+        <p class="section__eyebrow">06 — Configurateur</p>
+        <h2 class="section__title" id="config-title">La vôtre.<br /><em>Exactement.</em></h2>
+      </div>
+      <div class="configurator__panel glass" role="form" aria-label="Configurateur Mustang">
+        <div class="config-group">
+          <h3>Teinte carrosserie</h3>
+          <div class="config-options" id="config-paint" role="radiogroup" aria-label="Couleur de carrosserie"></div>
+          <p class="config-group__value" id="paint-name">Rouge Race</p>
+        </div>
+        <div class="config-group">
+          <h3>Jantes</h3>
+          <div class="config-options config-options--pills" id="config-wheels" role="radiogroup" aria-label="Style de jantes">
+            <button class="config-pill magnetic is-active" data-wheel="sport" role="radio" aria-checked="true">Argent poli 20″</button>
+            <button class="config-pill magnetic" data-wheel="track" role="radio" aria-checked="false">Noir satin 20″</button>
+          </div>
+        </div>
+        <div class="config-group">
+          <h3>Étriers de frein</h3>
+          <div class="config-options" id="config-calipers" role="radiogroup" aria-label="Couleur des étriers"></div>
+        </div>
+        <div class="config-group">
+          <h3>Aileron arrière</h3>
+          <div class="config-options config-options--pills" role="radiogroup" aria-label="Aileron arrière">
+            <button class="config-pill magnetic is-active" data-spoiler="on" role="radio" aria-checked="true">Performance</button>
+            <button class="config-pill magnetic" data-spoiler="off" role="radio" aria-checked="false">Ligne pure</button>
+          </div>
+        </div>
+        <div class="config-group config-group--price">
+          <span>Votre configuration</span>
+          <strong><span id="config-price">62 350</span> €</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SCÈNE 8 — FINALE ══════════════ -->
+    <section class="section finale" id="final" data-scene="finale" aria-labelledby="finale-title">
+      <div class="finale__content">
+        <svg class="finale__emblem" viewBox="0 0 120 60" fill="none" aria-hidden="true">
+          <path d="M8 46 26 14l14 22 14-24 14 24 14-22 18 32" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2 class="finale__title" id="finale-title">Prête à <em>rugir.</em></h2>
+        <p class="finale__sub">Le reste n'est que du transport.</p>
+        <a href="#configurateur" class="btn-cta magnetic" id="cta-btn">
+          <span>Réserver un essai</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <footer class="footer">
+        <p>Expérience non-officielle réalisée à des fins de démonstration. Ford, Mustang et leurs emblèmes appartiennent à Ford Motor Company.</p>
+        <p>© 2026 — Conçu &amp; développé avec WebGL, GSAP &amp; passion.</p>
+      </footer>
+    </section>
+
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
